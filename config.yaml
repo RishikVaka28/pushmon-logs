@@ -1,0 +1,16 @@
+# GitHub settings
+github_repo: "RishikVaka28/pushmon-logs"
+commit_message: "🟢 PushMon daily log update"
+auto_push: true
+
+# Monitoring configuration
+check_interval: 60  # Interval in minutes
+cpu_threshold: 85   # % usage to flag high CPU
+memory_threshold: 80  # % usage to flag high RAM
+
+# Log file location
+log_file: "./log/activity.log"
+
+# Optional email/notification settings (future feature)
+enable_notifications: false
+email: "your-email@example.com"
