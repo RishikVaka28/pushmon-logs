@@ -1,4 +1,4 @@
-#Libraries
+# Libraries
 import psutil
 import time
 import os
@@ -26,20 +26,32 @@ def log_activity():
         f.write(log_line)
 
     # Git push logic
-    if config['auto_push']:
+    if config.get('auto_push', False):
         try:
+            # Stage changes
             subprocess.run(["git", "add", "."], check=True)
-            subprocess.run(["git", "commit", "-m", config['commit_message']], check=True)
-            subprocess.run(["git", "push"], check=True)
+            
+            # Commit if there are actual changes
+            result = subprocess.run(
+                ["git", "diff", "--cached", "--quiet"]
+            )
+            if result.returncode == 1:
+                subprocess.run(["git", "commit", "-m", config['commit_message']], check=True)
+                subprocess.run(["git", "push"], check=True)
+                print("Changes pushed to GitHub.")
+            else:
+                print("No new changes to commit.")
         except subprocess.CalledProcessError as e:
             print("Git error:", e)
 
-# Schedule it
-schedule.every(config['check_interval']).minutes.do(log_activity)
+# Schedule job
+interval = config.get('check_interval', 5)
+schedule.every(interval).minutes.do(log_activity)
 
-print(f"Starting System Monitor Logger every {config['check_interval']} minutes.")
-log_activity()  # run once at start
+print(f"[INFO] Starting System Monitor Logger every {interval} minutes.")
+log_activity()  # Run once immediately
 
+# Main loop
 while True:
     schedule.run_pending()
     time.sleep(1)
